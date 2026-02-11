@@ -1,1 +1,12 @@
 @import "tailwindcss";
+
+
+/* Hide Scrollbar */
+.scroll-area {
+  overflow-y: scroll;
+  scrollbar-width: none; 
+}
+
+.scroll-area::-webkit-scrollbar {
+  display: none;
+}

@@ -58,7 +58,7 @@ const sendPrompt = async (req, res) => {
 const getHistory = async (req, res) => {
     try {
         const chats = await promptModel
-            .find({ userId: req.userId })
+            .find({ userId: req.user._id })
             .sort({ createdAt: 1 });
 
         res.status(200).json({

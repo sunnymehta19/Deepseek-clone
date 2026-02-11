@@ -46,20 +46,22 @@ export const loginUser = createAsyncThunk(
 
 
 export const logOutUser = createAsyncThunk(
-    "auth/logout",
-    async (_, thunkAPI) => {
-        try {
-            const res = await axios.get(
-                "http://localhost:3000/api/user/logout",
-                {},
-                { withCredentials: true }
-            );
-            return res.data;
-        } catch (error) {
-            return thunkAPI.rejectWithValue("Logout failed");
-        }
+  "auth/logout",
+  async (_, thunkAPI) => {
+    try {
+      const res = await axios.get(
+        "http://localhost:3000/api/user/logout",
+        { withCredentials: true } 
+      );
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error?.response?.data?.message || "Logout failed"
+      );
     }
+  }
 );
+
 
 
 export const checkAuth = createAsyncThunk(
@@ -106,7 +108,7 @@ const authSlice = createSlice({
             })
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.user = action.payload.success ? action.payload.user : null;
+                state.user = action.payload.success ? action.payload.checkUser : null;
                 state.isAuthenticated = action.payload.success;
             })
             .addCase(loginUser.rejected, (state) => {
