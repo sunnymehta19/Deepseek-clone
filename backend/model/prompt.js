@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 
 const promptSchema = new mongoose.Schema({
+    chatId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "chat",
+      required: true,
+    },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "user",

@@ -7,7 +7,7 @@ import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow as codeTheme } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useDispatch, useSelector } from "react-redux";
-import { sendPrompt } from "../Store/slices/chatSlice";
+import { clearChat, sendPrompt } from "../Store/slices/chatSlice";
 import { useNavigate } from "react-router-dom";
 import SidebarButton from "../../public/sidebarButton.svg";
 import NewChat from "../../public/newChat.svg";
@@ -19,7 +19,7 @@ const Prompt = ({ openSidebar, isSidebarOpen }) => {
     const [typeMessage, setTypeMessage] = useState("");
 
     const dispatch = useDispatch();
-    const { messages, loading } = useSelector((state) => state.chat);
+    const { messages, loading, currentChatId  } = useSelector((state) => state.chat);
 
     const promtEndRef = useRef();
     const navigate = useNavigate();
@@ -38,7 +38,11 @@ const Prompt = ({ openSidebar, isSidebarOpen }) => {
         setInputValue("");
         setTypeMessage(trimmed);
 
-        dispatch(sendPrompt(trimmed));
+        dispatch(sendPrompt({
+            content: trimmed,
+            chatId: currentChatId
+        }));
+
     };
 
     const handleKeyDown = (e) => {
@@ -219,7 +223,7 @@ const Prompt = ({ openSidebar, isSidebarOpen }) => {
 
 
             {/* Input Box */}
-            <div className="w-full max-w-3xl mx-auto mt-auto pb-6 rounded-t-3xl sticky bottom-0 bg-[#151517]">
+            <div className={`w-full max-w-3xl mx-auto mt-auto pb-6 rounded-t-3xl sticky bottom-0 bg-[#151517]`}>
                 <div className="bg-[#2c2c2e] rounded-3xl px-4 md:px-4 py-6 md:py-3 shadow-md">
                     <input
                         type="text"
@@ -281,6 +285,7 @@ const Prompt = ({ openSidebar, isSidebarOpen }) => {
                             />
                             <img
                                 src={NewChat}
+                                onClick={() => dispatch(clearChat())}
                                 alt="New Chat"
                                 className="w-4 h-4 cursor-pointer"
                             />
