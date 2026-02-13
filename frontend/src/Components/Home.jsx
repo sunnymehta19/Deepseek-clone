@@ -4,10 +4,16 @@ import { Menu } from 'lucide-react';
 import Prompt from './Prompt';
 import NewChat from "../../public/newChat.svg";
 import MenuBar from "../../public/menuBar.svg"
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import { deleteChat } from '../Store/slices/chatSlice';
 
 const Home = () => {
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 768);
+    const [deleteChatId, setDeleteChatId] = useState(null);
+
+    const dispatch = useDispatch();
 
 
     useEffect(() => {
@@ -29,10 +35,13 @@ const Home = () => {
             <div className="flex min-h-screen bg-[#151517] text-white ">
 
                 <div
-                    className={`fixed top-0 left-0 h-full w-66 bg-[#1b1b1c] transition-transform duration-300 z-40
+                    className={`fixed top-0 left-0 h-full w-66 bg-[#1b1b1c] border-r-[1px] border-[#282829] transition-transform duration-300 z-40
                     ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
                 >
-                    <Sidebar closeSidebar={() => setIsSidebarOpen(false)} />
+                    <Sidebar
+                        closeSidebar={() => setIsSidebarOpen(false)}
+                        setDeleteChatId={setDeleteChatId}
+                    />
                 </div>
 
 
@@ -62,6 +71,44 @@ const Home = () => {
                         onClick={() => setIsSidebarOpen(false)}
                     />
                 )}
+
+
+
+                {deleteChatId && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+                        <div className="bg-[#2c2c2e] w-[420px] rounded-2xl p-6 shadow-2xl animate-in fade-in zoom-in-95">
+
+                            <h2 className="text-lg font-semibold text-white mb-3">
+                                Delete this chat?
+                            </h2>
+
+                            <p className="text-sm text-gray-400 mb-6">
+                                This chat can't be recovered. Share links from it will be disabled. Delete?
+                            </p>
+
+                            <div className="flex justify-end gap-3">
+                                <button
+                                    onClick={() => setDeleteChatId(null)}
+                                    className="px-4 py-2 rounded-full bg-[#3a3a3c] text-white hover:bg-[#4a4a4c] transition"
+                                >
+                                    Cancel
+                                </button>
+
+                                <button
+                                    onClick={() => {
+                                        dispatch(deleteChat(deleteChatId));
+                                        setDeleteChatId(null);
+                                        toast.success("Chat deleted");
+                                    }}
+                                    className="px-4 py-2 rounded-full border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
             </div>
         </>
     )

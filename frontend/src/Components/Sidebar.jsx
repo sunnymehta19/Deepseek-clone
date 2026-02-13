@@ -20,11 +20,15 @@ import { FaShare } from "react-icons/fa";
 
 const groupChatsByDate = (chats) => {
     const groups = {};
-
     const now = new Date();
 
     chats.forEach(chat => {
-        const date = new Date(chat.updatedAt || chat.createdAt);
+
+        const rawDate = chat.updatedAt || chat.createdAt;
+        const date = rawDate ? new Date(rawDate) : new Date();
+
+        if (isNaN(date.getTime())) return;
+
         const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
 
         let label;
@@ -43,9 +47,7 @@ const groupChatsByDate = (chats) => {
 };
 
 
-
-
-const Sidebar = ({ closeSidebar }) => {
+const Sidebar = ({ closeSidebar, setDeleteChatId }) => {
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -53,6 +55,7 @@ const Sidebar = ({ closeSidebar }) => {
     const [openMenuId, setOpenMenuId] = useState(null);
     const [editingId, setEditingId] = useState(null);
     const [titleValue, setTitleValue] = useState("");
+
 
     const menuRef = useRef(null);
 
@@ -99,11 +102,22 @@ const Sidebar = ({ closeSidebar }) => {
         dispatch(fetchChats());
     }, []);
 
+
+    useEffect(() => {
+    const savedChatId = localStorage.getItem("currentChatId");
+
+    if (savedChatId) {
+        dispatch(fetchChatMessages(savedChatId));
+        dispatch(setCurrentChat(savedChatId));
+    }
+}, []);
+
+
     return (
         <div className="h-full flex flex-col justify-between p-3">
             {/* Header */}
             <div>
-                <div className="flex py-2 px-1 justify-between items-center mb-4">
+                <div className="flex py-2 px-1 justify-between items-center mb-3">
                     <div className="text-2xl font-bold ">
                         <img
                             src={DeepSeekLogo}
@@ -112,7 +126,10 @@ const Sidebar = ({ closeSidebar }) => {
                             onClick={() => navigate("/")}
                         />
                     </div>
-                    <button onClick={closeSidebar}>
+                    <button
+                        onClick={closeSidebar}
+                        className="p-2 rounded-full hover:bg-[#2D2D2E] transition"
+                    >
                         <img src={SidebarButton} alt="" className="cursor-pointer" />
                     </button>
 
@@ -146,7 +163,7 @@ const Sidebar = ({ closeSidebar }) => {
                                     <div key={label}>
 
                                         {/* GROUP TITLE */}
-                                        <div className="text-xs text-gray-500 px-2 mb-1 font-semibold">
+                                        <div className="text-xs text-gray-500 px-2 mb-1 font-bold">
                                             {label}
                                         </div>
 
@@ -155,15 +172,12 @@ const Sidebar = ({ closeSidebar }) => {
                                             {chats.map(chat => (
                                                 <div
                                                     key={chat._id}
-                                                    className={`group flex items-center justify-between px-2 py-2.5 font-semibold rounded-xl cursor-pointer text-[#f0f1f2]
+                                                    className={`group flex items-center justify-between ${editingId === chat._id ? "" : "px-2 py-2.5"} font-semibold rounded-xl cursor-pointer text-[#f0f1f2]
                                                          ${currentChatId === chat._id
                                                             ? "bg-[#2c2c2e]"
                                                             : "hover:bg-[#353638]"
                                                         }`}
                                                 >
-
-                                                   
-
 
                                                     <div className="flex w-full items-center">
 
@@ -188,7 +202,7 @@ const Sidebar = ({ closeSidebar }) => {
                                                                             setEditingId(null);
                                                                         }
                                                                     }}
-                                                                    className="bg-transparent outline-none border-b border-gray-500 text-white w-full"
+                                                                    className="bg-transparent outline-none border px-2 py-2 rounded-xl  border-[#5686FE] text-white w-full"
                                                                 />
                                                             ) : (
                                                                 <span
@@ -250,7 +264,22 @@ const Sidebar = ({ closeSidebar }) => {
                                                                         </button>
 
                                                                         <button
-                                                                            onClick={() => dispatch(shareChat(chat._id))}
+                                                                            onClick={async () => {
+                                                                                try {
+                                                                                    const result = await dispatch(shareChat(chat._id)).unwrap();
+
+                                                                                    // copy to clipboard
+                                                                                    await navigator.clipboard.writeText(result.link);
+
+                                                                                    // show toast
+                                                                                    toast.success("Link copied to clipboard!");
+
+                                                                                    setOpenMenuId(null);
+
+                                                                                } catch (error) {
+                                                                                    toast.error("Failed to share chat");
+                                                                                }
+                                                                            }}
                                                                             className="menuItem flex gap-2 items-center cursor-pointer"
                                                                         >
                                                                             <FaShare />
@@ -258,7 +287,10 @@ const Sidebar = ({ closeSidebar }) => {
                                                                         </button>
 
                                                                         <button
-                                                                            onClick={() => dispatch(deleteChat(chat._id))}
+                                                                            onClick={() => {
+                                                                                setDeleteChatId(chat._id);
+                                                                                setOpenMenuId(null);
+                                                                            }}
                                                                             className="menuItem text-red-400 flex gap-2 items-center cursor-pointer"
                                                                         >
                                                                             <RiDeleteBinLine />
@@ -333,6 +365,8 @@ const Sidebar = ({ closeSidebar }) => {
 
                 </div>
             </div>
+
+   
         </div>
     )
 }

@@ -119,6 +119,7 @@ const chatSlice = createSlice({
         clearChat: (state) => {
             state.messages = [];
             state.currentChatId = null;
+            localStorage.removeItem("currentChatId");
         },
         setCurrentChat: (state, action) => {
             state.currentChatId = action.payload;
@@ -142,8 +143,14 @@ const chatSlice = createSlice({
                 state.loading = false;
             })
 
-            .addCase(sendPrompt.pending, (state) => {
+            .addCase(sendPrompt.pending, (state, action) => {
                 state.loading = true;
+                const { content } = action.meta.arg;
+
+                state.messages.push({
+                    role: "user",
+                    content
+                });
             })
             .addCase(sendPrompt.fulfilled, (state, action) => {
                 state.loading = false;
@@ -152,15 +159,19 @@ const chatSlice = createSlice({
 
                 state.currentChatId = action.payload.chatId;
 
-                state.messages.push(action.payload.userMessage);
+                // state.messages.push(action.payload.userMessage);
                 state.messages.push(action.payload.assistantMessage);
 
                 if (isNewChat) {
                     state.chats.unshift({
                         _id: action.payload.chatId,
-                        title: action.payload.userMessage.content.slice(0, 30)
+                        title: action.payload.userMessage.content.slice(0, 30),
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        isPinned: false
                     });
                 }
+
             })
             .addCase(sendPrompt.rejected, (state, action) => {
                 state.loading = false;
