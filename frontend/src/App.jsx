@@ -1,7 +1,8 @@
 import { Navigate, Route, Routes } from "react-router-dom"
 import Home from "./Components/Home"
 import Login from "./Components/Login"
-import SignUp from "./Components/SignUp"
+import SignUp from "./Components/Signup"
+import AppSkeleton from "./Components/AppSkeleton"
 import { useDispatch, useSelector } from "react-redux"
 import { useEffect } from "react"
 
@@ -14,7 +15,7 @@ const App = () => {
 
   const dispatch = useDispatch();
   const { isLoading, isAuthenticated } = useSelector((store) => store.auth);
-  
+
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -27,9 +28,9 @@ const App = () => {
   }, [dispatch])
 
 
-  if (isLoading) {
-    return <div className="text-2xl">Loading...</div>;
-  }
+  if (isLoading && isAuthenticated === null) {
+  return <AppSkeleton />;
+}
 
   return (
     <>

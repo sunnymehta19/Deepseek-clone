@@ -71,10 +71,11 @@ const Sidebar = ({ closeSidebar, setDeleteChatId }) => {
     const handleLogout = async () => {
         try {
             const data = await dispatch(logOutUser()).unwrap();
+            await dispatch(clearChat());
             navigate("/login");
 
         } catch (error) {
-            alert(error?.response?.data?.errors || "Logout Failed");
+            toast.success((error?.response?.data?.errors || "Logout Failed"));
         }
     };
 
@@ -104,48 +105,54 @@ const Sidebar = ({ closeSidebar, setDeleteChatId }) => {
 
 
     useEffect(() => {
-    const savedChatId = localStorage.getItem("currentChatId");
+        const savedChatId = localStorage.getItem("currentChatId");
 
-    if (savedChatId) {
-        dispatch(fetchChatMessages(savedChatId));
-        dispatch(setCurrentChat(savedChatId));
-    }
-}, []);
+        if (savedChatId) {
+            dispatch(fetchChatMessages(savedChatId));
+            dispatch(setCurrentChat(savedChatId));
+        }
+    }, []);
 
 
     return (
         <div className="h-full flex flex-col justify-between p-3">
             {/* Header */}
             <div>
-                <div className="flex py-2 px-1 justify-between items-center mb-3">
-                    <div className="text-2xl font-bold ">
-                        <img
-                            src={DeepSeekLogo}
-                            alt="deepseeklogo"
-                            className="cursor-pointer"
-                            onClick={() => navigate("/")}
-                        />
-                    </div>
-                    <button
-                        onClick={closeSidebar}
-                        className="p-2 rounded-full hover:bg-[#2D2D2E] transition"
-                    >
-                        <img src={SidebarButton} alt="" className="cursor-pointer" />
-                    </button>
+                <div className="">
+                    <div className="flex py-2 px-1 justify-between items-center mb-3">
+                        <div className="text-2xl font-bold ">
+                            <img
+                                src={DeepSeekLogo}
+                                alt="deepseeklogo"
+                                className="cursor-pointer"
+                                onClick={() => navigate("/")}
+                            />
+                        </div>
+                        <button
+                            onClick={closeSidebar}
+                            className="p-2 rounded-full hover:bg-[#2D2D2E] transition"
+                        >
+                            <img src={SidebarButton} alt="" className="cursor-pointer" />
+                        </button>
 
+                    </div>
+
+                    <div className="">
+                        <button
+                            onClick={() => dispatch(clearChat())}
+                            className="flex gap-1 items-center justify-center font-semibold font-inter text-[15px] w-full bg-[#43454a] text-[#f0f1f2] py-2 rounded-full mb-7 cursor-pointer shadow-sm"
+                        >
+                            <span className="">
+                                <img src={NewChat} alt="" />
+                            </span>
+                            <span className="">New chat</span>
+                        </button>
+                    </div>
                 </div>
 
                 {/* History */}
-                <div className=" flex-1 overflow-y-auto px-1 mt-1  space-y-2">
-                    <button
-                        onClick={() => dispatch(clearChat())}
-                        className="flex gap-1 items-center justify-center font-semibold w-full bg-[#43454a] text-[#f0f1f2] py-2 rounded-full mb-7 cursor-pointer shadow-sm"
-                    >
-                        <span className="">
-                            <img src={NewChat} alt="" />
-                        </span>
-                        <span className="">New Chat</span>
-                    </button>
+                <div className="scroll-area text-gray-500 text-sm overflow-y-scroll h-[70vh]">
+
                     <div className="scroll-area text-gray-500 text-sm overflow-y-scroll h-[70vh] spac-y-2">
                         {/* No chat history yet */}
 
@@ -234,7 +241,7 @@ const Sidebar = ({ closeSidebar, setDeleteChatId }) => {
                                                                     className={`transition cursor-pointer
                                                                             ${openMenuId === chat._id
                                                                             ? "opacity-100"
-                                                                            : "opacity-0 group-hover:opacity-100"}
+                                                                            : "opacity-100 lg:opacity-0 lg:group-hover:opacity-100"}
                                                                             `}
                                                                 >
                                                                     <img src={ThreeDot} className="w-4 h-4 pt-1" />
@@ -329,7 +336,7 @@ const Sidebar = ({ closeSidebar, setDeleteChatId }) => {
                         </div>
                     </div>
                     {isMenuOpen && (
-                        <div className="absolute bottom-12 right-5 w-56 bg-[#2c2c2e] border border-[#3a3a3c] rounded-xl shadow-lg p-1 z-50 transition-all duration-200">
+                        <div className="absolute bottom-12 right-5 w-56 bg-[#2c2c2e] border border-[#3a3a3c] text-white rounded-xl shadow-lg p-1 z-50 transition-all duration-200">
 
                             <button className="flex gap-2 items-center w-full text-left px-2 py-2 text-sm hover:bg-[#3a3a3c] rounded-lg cursor-pointer transition">
                                 <span ><Smartphone size={20} /></span>
@@ -366,7 +373,7 @@ const Sidebar = ({ closeSidebar, setDeleteChatId }) => {
                 </div>
             </div>
 
-   
+
         </div>
     )
 }

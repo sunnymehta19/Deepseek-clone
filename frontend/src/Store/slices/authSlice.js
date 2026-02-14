@@ -2,10 +2,11 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const initialState = {
-    isAuthenticated: false,
+    isAuthenticated: null,
     isLoading: true,
     user: null,
 };
+
 
 export const registerUser = createAsyncThunk(
     "auth/register",
@@ -16,6 +17,11 @@ export const registerUser = createAsyncThunk(
                 formData,
                 { withCredentials: true }
             );
+
+            if (!res.data.success) {
+                return thunkAPI.rejectWithValue(res.data.message);
+            }
+
             return res.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(
@@ -24,6 +30,7 @@ export const registerUser = createAsyncThunk(
         }
     }
 );
+
 
 
 export const loginUser = createAsyncThunk(
@@ -35,6 +42,11 @@ export const loginUser = createAsyncThunk(
                 formData,
                 { withCredentials: true }
             );
+
+            if (!res.data.success) {
+                return thunkAPI.rejectWithValue(res.data.message);
+            }
+
             return res.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(
@@ -45,21 +57,22 @@ export const loginUser = createAsyncThunk(
 );
 
 
+
 export const logOutUser = createAsyncThunk(
-  "auth/logout",
-  async (_, thunkAPI) => {
-    try {
-      const res = await axios.get(
-        "http://localhost:3000/api/user/logout",
-        { withCredentials: true } 
-      );
-      return res.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(
-        error?.response?.data?.message || "Logout failed"
-      );
+    "auth/logout",
+    async (_, thunkAPI) => {
+        try {
+            const res = await axios.get(
+                "http://localhost:3000/api/user/logout",
+                { withCredentials: true }
+            );
+            return res.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(
+                error?.response?.data?.message || "Logout failed"
+            );
+        }
     }
-  }
 );
 
 

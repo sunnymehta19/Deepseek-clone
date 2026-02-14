@@ -23,6 +23,7 @@ const Prompt = ({ openSidebar, isSidebarOpen }) => {
     const { messages, loading, currentChatId } = useSelector((state) => state.chat);
 
     const promtEndRef = useRef();
+    const textareaRef = useRef(null);
     const navigate = useNavigate();
 
     const isDisabled = !inputValue.trim();
@@ -37,6 +38,24 @@ const Prompt = ({ openSidebar, isSidebarOpen }) => {
             localStorage.setItem("currentChatId", currentChatId);
         }
     }, [currentChatId]);
+
+    const handleChange = (e) => {
+        setInputValue(e.target.value);
+
+        const textarea = textareaRef.current;
+        textarea.style.height = "auto";
+
+        const maxHeight = 14 * 24;
+
+        if (textarea.scrollHeight > maxHeight) {
+            textarea.style.height = maxHeight + "px";
+            textarea.style.overflowY = "auto";
+        } else {
+            textarea.style.height = textarea.scrollHeight + "px";
+            textarea.style.overflowY = "hidden";
+        }
+    };
+
 
 
     const handleSend = () => {
@@ -54,11 +73,14 @@ const Prompt = ({ openSidebar, isSidebarOpen }) => {
     };
 
     const handleKeyDown = (e) => {
-        if (e.key === "Enter") handleSend();
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            handleSend();
+        }
     };
 
     return (
-        <div className={`flex flex-col flex-1 w-full px-4 ${messages.length === 0 ? "justify-center" : "pt-0"}`}>
+        <div className={`flex flex-col flex-1 min-h-0 w-full px-4 ${messages.length === 0 ? "justify-center" : "pt-0"}`}>
 
 
             {/* Greeting only when no messages */}
@@ -76,7 +98,8 @@ const Prompt = ({ openSidebar, isSidebarOpen }) => {
 
             {/* Chat Area */}
             {(messages.length > 0 || loading) && (
-                <div className="w-full max-w-3xl mx-auto flex-1 overflow-y-auto mt-5 md:mt-10 px-2 pb-40">
+                <div className="w-full max-w-3xl mx-auto flex-1 min-h-0 overflow-y-auto mt-5 md:mt-10 px-2 pb-40 scroll-area">
+
                     <div className="space-y-8">
                         {messages.map((msg, index) => (
                             <div
@@ -85,7 +108,7 @@ const Prompt = ({ openSidebar, isSidebarOpen }) => {
                                     }`}
                             >
                                 {msg.role === "assistant" ? (
-                                    <div className=" text-[15px] leading-7 text-gray-200">
+                                    <div className=" text-[15px] leading-7 text-gray-200 max-w-full min-w-0">
                                         <ReactMarkdown
                                             remarkPlugins={[remarkGfm]}
                                             components={{
@@ -131,8 +154,20 @@ const Prompt = ({ openSidebar, isSidebarOpen }) => {
                                                         <SyntaxHighlighter
                                                             style={codeTheme}
                                                             language={match[1]}
-                                                            PreTag="div"
-                                                            className="rounded-xl mt-4 text-sm"
+                                                            PreTag="pre"
+                                                            wrapLongLines={true}
+                                                            codeTagProps={{
+                                                                style: {
+                                                                    whiteSpace: "pre-wrap",
+                                                                    wordBreak: "break-word"
+                                                                }
+                                                            }}
+                                                            customStyle={{
+                                                                overflowX: "auto",
+                                                                borderRadius: "16px",
+                                                                padding: "16px"
+                                                            }}
+                                                            className="mt-4 text-sm"
                                                             {...props}
                                                         >
                                                             {String(children).replace(/\n$/, "")}
@@ -149,7 +184,7 @@ const Prompt = ({ openSidebar, isSidebarOpen }) => {
                                         </ReactMarkdown>
                                     </div>
                                 ) : (
-                                    <div className="max-w-[80%] bg-[#2c2c2e] text-white rounded-full px-5 py-3 text-[15px] leading-6 break-words">
+                                    <div className="max-w-[80%] bg-[#2c2c2e] text-white rounded-3xl px-5 py-3 text-[15px] leading-6 break-words">
                                         {msg.content}
                                     </div>
                                 )}
@@ -175,16 +210,17 @@ const Prompt = ({ openSidebar, isSidebarOpen }) => {
             )}
 
             {/* Input Box */}
-            <div className={`w-full max-w-3xl mx-auto pb-6 rounded-t-3xl bg-[#151517] 
+            <div className={`w-full max-w-3xl mx-auto pb-4 lg:pb-6 rounded-t-3xl bg-[#151517] 
                 ${messages.length > 0 ? "mt-auto sticky bottom-0" : "mt-7 mb-10"}`}>
-                <div className="bg-[#2c2c2e] rounded-3xl px-4 md:px-4 py-6 md:py-3 shadow-md">
-                    <input
-                        type="text"
+                <div className="bg-[#2c2c2e] rounded-3xl px-4 md:px-4 py-4 md:py-3 shadow-md ">
+                    <textarea
+                        ref={textareaRef}
                         placeholder="Message DeepSeek"
                         value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
+                        onChange={handleChange}
                         onKeyDown={handleKeyDown}
-                        className="bg-transparent w-full text-white placeholder-[#7e8289] text-base md:text-lg outline-none mb-2 md:mb-5 mt-1"
+                        rows={1}
+                        className="ds-scroll bg-transparent w-full text-white placeholder-[#7e8289] text-base md:text-[15px] font-inter font-medium outline-none resize-none overflow-y-hidden"
                     />
 
                     <div className="flex items-center justify-between mt-4 gap-4">
@@ -253,7 +289,7 @@ const Prompt = ({ openSidebar, isSidebarOpen }) => {
             </div>
 
             {!isSidebarOpen && (
-                <div className="hidden lg:block fixed top-3 left-4 z-50 shadow-lg transition">
+                <div className="hidden md:block fixed top-3 left-4 z-50 shadow-lg transition">
                     <div className="flex gap-2 items-center">
                         <img
                             src={Whale}
