@@ -159,7 +159,6 @@ const chatSlice = createSlice({
 
                 state.currentChatId = action.payload.chatId;
 
-                // state.messages.push(action.payload.userMessage);
                 state.messages.push(action.payload.assistantMessage);
 
                 if (isNewChat) {

@@ -274,11 +274,7 @@ const Sidebar = ({ closeSidebar, setDeleteChatId }) => {
                                                                             onClick={async () => {
                                                                                 try {
                                                                                     const result = await dispatch(shareChat(chat._id)).unwrap();
-
-                                                                                    // copy to clipboard
                                                                                     await navigator.clipboard.writeText(result.link);
-
-                                                                                    // show toast
                                                                                     toast.success("Link copied to clipboard!");
 
                                                                                     setOpenMenuId(null);
@@ -303,7 +299,6 @@ const Sidebar = ({ closeSidebar, setDeleteChatId }) => {
                                                                             <RiDeleteBinLine />
                                                                             Delete
                                                                         </button>
-
                                                                     </div>
                                                                 )}
                                                             </div>
@@ -369,11 +364,8 @@ const Sidebar = ({ closeSidebar, setDeleteChatId }) => {
                             <img src={ThreeDot} alt="menu" />
                         </button>
                     </div>
-
                 </div>
             </div>
-
-
         </div>
     )
 }
