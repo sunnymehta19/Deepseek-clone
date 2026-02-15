@@ -13,7 +13,7 @@ export const fetchChats = createAsyncThunk(
     "chat/fetchChats",
     async () => {
         const { data } = await axios.get(
-            "http://localhost:3000/api/deepseek/chats",
+            `${import.meta.env.VITE_API_URL}/api/deepseek/chats`,
             { withCredentials: true }
         );
         return data.chats;
@@ -25,7 +25,7 @@ export const fetchChatMessages = createAsyncThunk(
     "chat/fetchMessages",
     async (chatId) => {
         const { data } = await axios.get(
-            `http://localhost:3000/api/deepseek/chat/${chatId}`,
+            `${import.meta.env.VITE_API_URL}/api/deepseek/chat/${chatId}`,
             { withCredentials: true }
         );
 
@@ -42,7 +42,7 @@ export const sendPrompt = createAsyncThunk(
     async ({ content, chatId }) => {
 
         const { data } = await axios.post(
-            "http://localhost:3000/api/deepseek/prompt",
+            `${import.meta.env.VITE_API_URL}/api/deepseek/prompt`,
             { content, chatId },
             { withCredentials: true }
         );
@@ -60,7 +60,7 @@ export const deleteChat = createAsyncThunk(
     "chat/deleteChat",
     async (chatId) => {
         await axios.delete(
-            `http://localhost:3000/api/deepseek/chat/${chatId}`,
+            `${import.meta.env.VITE_API_URL}/api/deepseek/chat/${chatId}`,
             { withCredentials: true }
         );
 
@@ -73,7 +73,7 @@ export const renameChat = createAsyncThunk(
     "chat/renameChat",
     async ({ chatId, title }) => {
         const { data } = await axios.patch(
-            `http://localhost:3000/api/deepseek/chat/${chatId}/rename`,
+            `${import.meta.env.VITE_API_URL}/api/deepseek/chat/${chatId}/rename`,
             { title },
             { withCredentials: true }
         );
@@ -86,7 +86,7 @@ export const togglePinChat = createAsyncThunk(
     "chat/togglePin",
     async (chatId) => {
         const { data } = await axios.patch(
-            `http://localhost:3000/api/deepseek/chat/${chatId}/pin`,
+            `${import.meta.env.VITE_API_URL}/api/deepseek/chat/${chatId}/pin`,
             {},
             { withCredentials: true }
         );
@@ -99,7 +99,7 @@ export const shareChat = createAsyncThunk(
     "chat/shareChat",
     async (chatId) => {
         const { data } = await axios.patch(
-            `http://localhost:3000/api/deepseek/chat/${chatId}/share`,
+            `${import.meta.env.VITE_API_URL}/api/deepseek/chat/${chatId}/share`,
             {},
             { withCredentials: true }
         );

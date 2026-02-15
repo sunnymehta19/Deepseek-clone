@@ -4,7 +4,7 @@ const AppSkeleton = () => {
   return (
     <div className="flex h-screen bg-[#151517] text-white animate-pulse">
 
-      <div className="hidden md:flex flex-col w-[16.5rem] bg-[#1b1b1c] p-4 space-y-6">
+      <div className="hidden md:flex flex-col w-66 bg-[#1b1b1c] p-4 space-y-6">
         <div className="h-6 w-28 bg-[#2c2c2e] rounded-md" />
         <div className="h-10 w-full bg-[#2c2c2e] rounded-full" />
 

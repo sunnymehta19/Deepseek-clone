@@ -40,7 +40,7 @@ const Home = () => {
             <div className="flex h-screen overflow-hidden text-white`">
 
                 <div
-                    className={`fixed top-0 left-0 h-full w-66 bg-[#1b1b1c] border-r-[1px] border-[#282829] transition-transform duration-300 z-40
+                    className={`fixed top-0 left-0 h-full w-66 bg-[#1b1b1c] border-r border-[#282829] transition-transform duration-300 z-40
                     ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
                 >
                     <Sidebar
@@ -53,7 +53,7 @@ const Home = () => {
                 {/* Main content */}
                 <div
                     className={`flex-1 flex flex-col w-full transition-all duration-300 min-h-0
-                    ${isSidebarOpen ? "pl-[16.5rem]" : "pl-0"}`}
+                    ${isSidebarOpen ? "pl-66" : "pl-0"}`}
                 >
                     <div className="lg:hidden flex items-center justify-between px-4 pt-4">
                         <button onClick={() => setIsSidebarOpen(true)} className='md:hidden'>

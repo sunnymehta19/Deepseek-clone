@@ -175,7 +175,7 @@ const Sidebar = ({ closeSidebar, setDeleteChatId }) => {
                                         </div>
 
                                         {/* CHATS */}
-                                        <div className="flex flex-col gap-1">
+                                        <div className="flex flex-col ">
                                             {chats.map(chat => (
                                                 <div
                                                     key={chat._id}
