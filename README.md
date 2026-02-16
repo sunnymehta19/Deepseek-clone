@@ -56,5 +56,19 @@ Since the backend is hosted on a **free Render instance**, the app may take **30
 - dotenv
 - OpenAI SDK
 
+### ☁️ Deployment
+- Frontend: Vercel
+- Backend: Render
+- Database: MongoDB Atlas
+
+## 📈 Future Improvements
+- Refresh Token System
+- Streaming AI Responses
+- Real-time typing indicator
+- File Upload Support
+- Light theme toggle
+- Custom domain setup
+
+
 
 
